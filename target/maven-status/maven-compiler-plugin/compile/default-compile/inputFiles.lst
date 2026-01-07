@@ -1,0 +1,15 @@
+/home/ubuntu/InnovativeReviewapp/src/main/java/com/innovative/ReviewAppApplication.java
+/home/ubuntu/InnovativeReviewapp/src/main/java/com/innovative/controller/AuthController.java
+/home/ubuntu/InnovativeReviewapp/src/main/java/com/innovative/controller/ReviewController.java
+/home/ubuntu/InnovativeReviewapp/src/main/java/com/innovative/entity/Comment.java
+/home/ubuntu/InnovativeReviewapp/src/main/java/com/innovative/entity/Review.java
+/home/ubuntu/InnovativeReviewapp/src/main/java/com/innovative/entity/ReviewLike.java
+/home/ubuntu/InnovativeReviewapp/src/main/java/com/innovative/entity/User.java
+/home/ubuntu/InnovativeReviewapp/src/main/java/com/innovative/repository/CommentRepository.java
+/home/ubuntu/InnovativeReviewapp/src/main/java/com/innovative/repository/ReviewLikeRepository.java
+/home/ubuntu/InnovativeReviewapp/src/main/java/com/innovative/repository/ReviewRepository.java
+/home/ubuntu/InnovativeReviewapp/src/main/java/com/innovative/repository/UserRepository.java
+/home/ubuntu/InnovativeReviewapp/src/main/java/com/innovative/security/SecurityConfig.java
+/home/ubuntu/InnovativeReviewapp/src/main/java/com/innovative/service/CustomUserDetailsService.java
+/home/ubuntu/InnovativeReviewapp/src/main/java/com/innovative/service/UserService.java
+/home/ubuntu/InnovativeReviewapp/src/main/java/com/innovative/service/UserServiceImpl.java

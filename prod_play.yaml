@@ -1,139 +1,63 @@
----
-- name: Deploying Java-Project
-  hosts: all
+- name: Deploy ReviewApp to ASG
+  hosts: asg_reviewASG
+  become: yes
+
   vars:
-    mysql_socket:
-      RedHat: /var/lib/mysql/mysql.sock
-      Debian: /var/run/mysqld/mysqld.sock
-    distro:
-      RedHat: python3-PyMySQL
-      Debian: python3-pymysql
-    javajdk:
-      RedHat: java-17-openjdk
-      Debian: openjdk-17-jdk
-    packages:
-      - mariadb-server
-      - maven
-      - git
-    db_pass: password
+    app_dir: /opt/reviewapp
+    app_name: reviewapp.jar
+    service_name: reviewapp
+    nexus_url: "http://172.31.34.187:8081/repository/snapshot/com/innovative/ReviewApp/0.0.1-SNAPSHOT/ReviewApp-0.0.1-20260216.190107-1.jar"
 
   tasks:
-    - name: Install JDK {{ javajdk[ansible_os_family] }}
-      package:
-        name: "{{ javajdk[ansible_os_family] }}"
+
+    - name: Ensure Java 17 installed
+      apt:
+        name: openjdk-17-jdk
         state: present
+        update_cache: yes
 
-    - name: Install Packages
-      package:
-        name: "{{ item }}"
-        state: present
-      with_items: "{{ packages }}"
-
-    - name: Install Python-MySQL
-      package:
-        name: "{{ distro[ansible_os_family] }}"
-        state: present
-
-    - name: Start the DB service
-      service:
-        name: mariadb
-        state: started
-        enabled: yes
-
-    - name: Secure Mysql/Mariadb Installation
-      mysql_user:
-        name: root
-        password: "{{ db_pass }}"
-        login_unix_socket: "{{ mysql_socket[ansible_os_family] }}"
-        priv: '*.*:ALL,GRANT'
-        check_implicit_admin: yes
-        host: localhost
-        login_user: root
-        login_password: "{{ db_pass }}"
-
-    - name: Create reviewdb Database
-      mysql_db:
-        name: reviewdb
-        state: present
-        login_user: root
-        login_password: "{{ db_pass }}"
-
-    - name: Creating DB user admin
-      mysql_user:
-        name: admin
-        password: "{{ db_pass }}"
-        host: "%"
-        priv: 'reviewdb.*:ALL,GRANT'
-        state: present
-        login_user: root
-        login_password: "{{ db_pass }}"
-
-    - name: Clone Source Code from Github
-      git:
-        repo: 'https://github.com/YagneshTrainer/reviewapp.git'
-        dest: /tmp/reviewapp
-        force: yes
-        update: yes
-
-    - name: Modifying the application.properties
-      template:
-        src: application.properties.j2
-        dest: /tmp/reviewapp/src/main/resources/application.properties
-
-    - name: Copy DB Server File
-      template:
-        src: 50-server.cnf.j2
-        dest: /etc/mysql/mariadb.conf.d/50-server.cnf
-      when: ansible_os_family == "Debian"
-
-    - name: Restart Mysql service on {{ ansible_host }}
-      service:
-        name: mariadb
-        state: restarted # Very important to restart on Debian systems, redhat works fine.
-
-    - name: Buliding artifact
-      command: sudo mvn clean install
-      args:
-        chdir: /tmp/reviewapp
-
-    - name: Create reviewapp Document Root
+    - name: Create application directory
       file:
-        path: /opt/reviewapp
+        path: "{{ app_dir }}"
         state: directory
-        mode: 0777
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
 
-    - name: Copy the artifact
-      command: mv /tmp/reviewapp/target/ReviewApp-0.0.1-SNAPSHOT.jar /opt/reviewapp/ReviewApp-0.0.1-SNAPSHOT.jar
+    - name: Download artifact from Nexus
+      get_url:
+        url: "{{ nexus_url }}"
+        dest: "{{ app_dir }}/{{ app_name }}"
+        mode: '0755'
 
-    - name: Create Service file for systemd
+    - name: Create systemd service file
       copy:
-        dest: /etc/systemd/system/reviewapp.service
+        dest: "/etc/systemd/system/{{ service_name }}.service"
         content: |
           [Unit]
-          Description=Spring Boot ReviewApp
+          Description=ReviewApp Spring Boot Application
           After=network.target
 
           [Service]
-          User=root
-          ExecStart=/usr/bin/java -jar /opt/reviewapp/ReviewApp-0.0.1-SNAPSHOT.jar
+          User=ubuntu
+          WorkingDirectory={{ app_dir }}
+          ExecStart=/usr/bin/java -jar {{ app_dir }}/{{ app_name }}
           SuccessExitStatus=143
           Restart=always
-          RestartSec=10
+          RestartSec=5
 
           [Install]
           WantedBy=multi-user.target
 
+    - name: Reload systemd
+      command: systemctl daemon-reload
 
-    - name: Start and enable the reviewapp service
-      service:
-        name: reviewapp
-        state: started
+    - name: Enable service
+      systemd:
+        name: "{{ service_name }}"
         enabled: yes
 
-    - name: Setup Firewall for Java port
-      firewalld:
-        port: 8080/tcp
-        permanent: yes
-        state: enabled
-        immediate: yes
-      when: ansible_os_family == "RedHat"
+    - name: Restart service
+      systemd:
+        name: "{{ service_name }}"
+        state: restarted

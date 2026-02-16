@@ -1,8 +1,8 @@
 <settings>
 
     <server>
-	    <id>${SNAP-REPO}</id>
-	    <username>${NEXUS-USER}</username>
-	    <password>${NEXUS-PASS}</password>
+	    <id>snapshot</id>
+	    <username>your-user</username>
+	    <password>your-pass</password>
     </server>
 </settings>

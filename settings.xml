@@ -2,7 +2,7 @@
 
     <server>
 	    <id>snapshot</id>
-	    <username>your-user</username>
-	    <password>your-pass</password>
+	    <username>admin</username>
+	    <password>password</password>
     </server>
 </settings>

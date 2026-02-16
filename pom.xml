@@ -23,7 +23,7 @@
         <java.version>17</java.version>
     </properties>
 
-    <!-- 🔥 Added Distribution Management -->
+    <!-- Added Distribution Management -->
     <distributionManagement>
         <repository>
             <id>nexus-releases</id>

@@ -2,13 +2,15 @@ pipeline {
     agent any
 
     stages {
+
         stage('Deploy to EKS') {
             steps {
                 sh """
-                kubectl set image deployment/reviewapp \
-                reviewapp=innovativeacademy/reviewapp:${BUILD_NUMBER}
+                kubectl apply -f deployment.yaml
+                kubectl set image deployment/reviewapp reviewapp=innovativeacademy/reviewapp:${BUILD_NUMBER}
                 """
             }
         }
+
     }
 }

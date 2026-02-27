@@ -43,5 +43,14 @@ pipeline {
                 sh "docker push $DOCKER_IMAGE:$DOCKER_TAG"
             }
         }
+
+        stage('Deploy To Eks') {
+            steps {
+                sh """
+                kubectl apply -f deployment.yaml
+                kubectl set image deployment/reviewapp reviewapp=innovativeacademy/reviewapp:${BUILD_NUMBER}
+                """
+            }
+        }
     }
 }

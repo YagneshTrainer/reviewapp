@@ -1,5 +1,5 @@
-com/innovative/entity/ReviewLike.class
 com/innovative/service/UserService.class
+com/innovative/entity/ReviewLike.class
 com/innovative/entity/Comment.class
 com/innovative/repository/ReviewLikeRepository.class
 com/innovative/ReviewAppApplication.class

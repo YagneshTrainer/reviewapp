@@ -6,7 +6,7 @@
     app_dir: /opt/reviewapp
     app_name: reviewapp.jar
     service_name: reviewapp
-    nexus_url: "http://172.31.9.21:8081/repository/snapshot/com/innovative/ReviewApp/0.0.1-SNAPSHOT/ReviewApp-0.0.1-20260505.180558-1.jar"
+    nexus_url: "http://172.31.9.21:8081/repository/snapshot/com/innovative/ReviewApp/0.0.1-SNAPSHOT/ReviewApp-0.0.1-20260512.203459-3.jar"
 
   tasks:
 

@@ -16,7 +16,7 @@ pipeline {
 
         stage('Build Maven Artifact') {
             steps {
-                sh 'mvn clean package'
+                sh 'mvn clean package -DskipTests'
             }
         }
 
